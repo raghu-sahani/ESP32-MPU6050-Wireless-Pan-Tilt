@@ -31,7 +31,68 @@ Wireless pan/tilt control using two ESP32 boards and ESP-NOW.
 
 Important: use a common ground between the receiver ESP32 and the external servo power supply. Do not power both servos from the ESP32 3.3V pin.
 
-## Receiver MAC Address
+## How to Retrieve the Receiver MAC Address
+
+Before uploading the final sender code, first read the Wi-Fi station MAC address of the receiver ESP32. ESP-NOW uses this address so the sender knows which ESP32 should receive the pan and tilt data.
+
+### Steps
+
+1. Connect only the receiver ESP32 to your computer with USB.
+2. Open Arduino IDE.
+3. Open the sketch located at `receiver_mac_id/receiver_mac_id.ino`.
+4. Select the correct ESP32 board and COM port.
+5. Upload the sketch.
+6. Open Serial Monitor at `115200` baud.
+7. The receiver MAC address will be printed, for example:
+
+```text
+MAC Address: 00:70:07:E3:15:D8
+```
+
+8. Copy that MAC address and put it into the sender code in hexadecimal format.
+
+For example, this MAC:
+
+```text
+00:70:07:E3:15:D8
+```
+
+becomes:
+
+```cpp
+uint8_t receiverAddress[] = {
+  0x00, 0x70, 0x07, 0xE3, 0x15, 0xD8
+};
+```
+
+### Receiver MAC Retrieval Code
+
+```cpp
+#include <WiFi.h>
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.mode(WIFI_STA);
+  delay(1000);
+
+  Serial.println();
+  Serial.println("===========================");
+  Serial.println("ESP32 RECEIVER MAC ADDRESS");
+  Serial.println("===========================");
+
+  Serial.print("MAC Address: ");
+  Serial.println(WiFi.macAddress());
+
+  Serial.println("===========================");
+}
+
+void loop() {
+}
+```
+
+After copying the MAC address, upload the normal receiver sketch again to the receiver ESP32.
+
+## Receiver MAC Address Used in This Project
 
 Current receiver MAC used by the sender:
 
@@ -45,7 +106,7 @@ uint8_t receiverAddress[] = {
 };
 ```
 
-If you replace the receiver ESP32, update this MAC address in the sender code.
+If you replace the receiver ESP32, repeat the MAC retrieval steps above and update this address in the sender code.
 
 ## Required Arduino Libraries
 
